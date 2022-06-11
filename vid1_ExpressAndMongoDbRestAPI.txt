@@ -1,0 +1,113 @@
+RESTful api: 
+A REST API (also known as RESTful API) is an application programming interface (API or web API) that conforms to the constraints of REST architectural style and 
+allows for interaction with RESTful web services. REST stands for representational state transfer and was created by computer scientist Roy Fielding
+Examples: a GET request to /user/ returns a list of registered users on a system. a POST request to /user/123 creates a user with the ID 123 using the body data. a PUT request 
+to /user/123 updates user 123 with the body data. a GET request to /user/123 returns the details of user 123.
+
+POSTMAN URI: http://localhost:5000/api/goals
+
+Mongoose: a JavaScript object-oriented programming library that creates a connection between MongoDB and the Express web application framework.
+
+Express.js: a backend node.js framework
+
+REMEBER TO GET SERVER RUNNING WITH "NPM START" BEFORE DOING ANYTHING. "NPM RUN SERVER" WORKS AS WELL.
+
+Getting started: created folder "mern-tutorial", which will be our root in VS Code. Created "backend" folder with server.js.
+Setting up "npm init" created package.json in root. Created .gitignore file in root before we installed any dependencies, so that the node_modules folder and .env files don't 
+show in the github repository once we create it.
+
+INSTALLING DEPENDENCIES: while in root: npm i express dotenv mongoose colors // "i" means install!
+this will add (fairly large) node_modules folder in backend and package-lock.json in root.
+
+DEV DEPENDENCY: npm i -D nodemon	// will constantly watch server.js file so we don't have to keep restarting it.
+Now, in the package.json file, we can see all our dependencies and dev dependency.
+
+in the "scripts" dependency in the json, replace test with: 
+"start": "node backend/server.js",	// the script to run
+"server": "nodemon backend/server.js"	// to be able to run "npm run server" so nodemon can run the server.js file
+
+test "npm run server" to see if it works 
+stop running with ctrl+c
+
+Traversy recommends we make a git repository. Remember, to do this via the cmd:
+git init
+git add . 	// (add all)
+git commit -m 'Initial commit'
+
+* we'll probably deploy this to heroku. Make the commits as I move along.
+
+THIS TUTORIAL VIDEO TALKS ABOUT FIRST CREATING THE BACKEND API
+
+CREATING A ROUTE:
+getting http request. I used postman, but I can also just use the browser since it's only a http request. Under requests tab, set it to a "get" request and type in the request url.
+Example: http://localhost:5000/api/goals. Note that the server should be running (I think). This example returns an html page under "body" describing an error, since the route hasn't 
+been created yet.
+
+IMPORTANT NOTE WHEN SENDING REQUESTS ON POSTMAN: first, notice this code: "if (!req.body.text) {", this works on the BODY section. Notice there's multiple sections under the text box
+where I always paste the uri. Make sure your request is being sent with stuff in BODY.
+
+27:05
+if we want to make a post request to api/goals, we need to send some data to create a goal. To do this on postman, add some data under the "body" tab. We will be using urlencoded json.
+Send this: text: "My first goal", under the respective key and value text boxes.
+Once sent, nothing will happend because we haven't handled this kind of thing yet. The server.js file needs to handle body data through "middleware".
+
+Once we have our error handler set up in goalController.js and the html error template thing returns, if we go under the "header" tab, we can see that the "Content-Type" is set to text
+html (not verbatim). We want to change the default express error handler, so we add a middleware func in "backend" folder. We change it from the default html error to a json one.
+
+In the error, we only show the stack if we're in development mode. To change this mode, go to the .env file in the root.
+
+Once we get the async function stuff done in goalController.js, we can now start working on databases.
+
+Once in MongoDB website, you're gonna wanna connect both via Compass and the Application. For the latter, open the .env file and make a new var:
+MONGO_URI: mongodb+srv://RomanRenders:<password>@traversytutorialcluster.tpggwf5.mongodb.net/?retryWrites=true&w=majority
+
+^^^ this uri needs some changes. Between mongodb.net/ and ?retryWrite put the name of the database, in this case, "mernapp". Put the password in too.
+
+PIZZA IN 20 MINUTES (6:15)
+
+Now to actually connect to the database:
+create folder "config" in backend folder with a "db.js" file in it. We will be working w/ Mongoose, which we should already have installed. To check, go to package.json and check under
+the sub-object "dependencies". Note that we also have "colors" installed, which we'll use in server.js. 
+
+Now that we're connected (the underlined cyan  text shows in terminal!), we can start creating our models (folder in backend). This is where we define any resources we have, like 
+blog posts and TODO's. We created a "goalModel.js" file, where we define a "schema" for our goals.
+
+UPDATING GOALS IN POSTMAN:
+under "PUT" type in, for example, http://localhost:5000/api/goals. At the end, put the id of the goal (at least in our case, since in goalController.js our updateGoal func finds 
+goals by their id. Example: "http://localhost:5000/api/goals/62910a81c2ee28927ee08bc6". This will update the goal with that id.
+
+DELETING GOALS:
+"pause the video and see if you can do this yourself"
+// I did it: 
+const deleteGoal = asyncHandler(async (req, res) => {    
+  const goal = await Goal.findById(req.params.id)   
+  if (!goal) {
+    res.status(400)
+  }
+
+  const deletedGoal = await Goal.findByIdAndDelete(req.params.id, req.body)  	// HE USED REMOVE INSTEAD OF DELETE
+  res.status(200).json(deletedGoal)
+})
+
+// how traversy did it:
+const deleteGoal = asyncHandler(async (req, res) => {    
+  const goal = await Goal.findById(req.params.id)   
+  if (!goal) {
+    res.status(400)
+    throw new Error('Goal not found')
+  }
+
+  await goal.remove()
+  res.status(200).json({ id: req.params.id })		// "this is for the front end later on"
+})
+
+WITH THAT SAID, WE NOW HAVE COMPLETE CRUD FUNCTIONALITY (SEE GOALROUTES.JS) FOR OUR API.
+IN NEXT VIDEO WE'LL CREATE AUTHENTICATION. WE STILL NEED TO CREATE FRONTEND TOO. 
+
+
+
+
+
+
+
+

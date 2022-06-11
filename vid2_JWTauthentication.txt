@@ -1,0 +1,137 @@
+MAIN "ENDPOINT" USED: http://localhost:5000/api/users
+
+in this tutorial we'll add authentication to our REST api using JSON Web Tokens (JWT).
+We're gonna add authentication so that not just anyone can enter our database and mess with our stuff.
+
+We create a new "userModel.js" under models folder and new "userController" under controllers folder. Basically repeat same stuff we did for goals but for users
+
+We also create a new "userController.js" under controllers folder and add a "registerUser" func in it, which we export and use in "userRoutes.js". Now if we go to 
+postman and send a post request at "http://localhost:5000/api/users" we'll get a message.
+
+REMEMBER FROM GOALROUTES.JS:
+/* All these requests follow CRUD (create, read, update, delete). Each of these requires different "paths":
+C (HTTP POST): /api/devices + payload
+R (HTTP GET): /api/devices
+U (HTTP PUT): /api/devices/1 + payload    
+D (HTTP DELETE): /api/devices/1
+
+put request example on postman: http://localhost:5000/api/goals/123211234:
+{
+    "message": "Update goal 123211234"
+}
+
+delete request example (with same request url):
+{
+    "message": "Delete goal 123211234"
+}
+
+we now have all our routes set up. 
+*/
+
+We now created our user routes (login, authenticate, display user data) and can run their CRUD functions in postman by pasting their respective "paths"
+Now we can add the REAL functionalities to these routes.
+
+First off, we don't want to store user passwords as plaintext. We'll use bcryptjs to encrypt them (cmd: npm i bcryptjs) 
+We're also gonna be working with json web tokens, so we install "jsonwebtoken"
+These are the "dependencies" we'll be working with
+
+just like in goalController.js, we make all the funcs in userController.js asynchronous. We then wrap each of them up in asyncHandler() to handle exceptions.
+
+in goalController we create "registerUser" asynchronous func, which, in "userRoutes,js" is set as a POST request (create). To test, run the main endpoint (see above) in postman 
+as a post request and send in the necessary values.
+
+If you go to mongoDBCompass, you'll see that a "users" folder was automatically created. In it you can see the "User" object you just created with postman. The password you 
+put in appears as hashed. Pretty neat.
+
+After we've created the functionality for the loginUser func (success!), which is a "post" request, we can call it up on postman through the endnode http://localhost:5000/api/users/login
+If successful, the server's response is sending back your data.
+
+NOW TO GET TO OUR JSON WEB TOKEN:
+first off, we need to have a "secret" in the .env file, called "JWT_SECRET", which can be set to anything, even "abc123"
+We then add a "generateToken" func in userController.
+With our generateToken func implemented in our register and login funcs, we can now see a token property when we login or register on postman (sucess!)
+If you go to JWT.io and paste in your given token, you can see the data within it.
+
+Registering the same user more than once throws an error :)
+
+NOW TO PROTECT OUR ROUTES:
+remember, to do this, we use middleware. A piece of middleware is a func that runs during a request/response cycle.
+We create "authMiddleware.js" in middleware folder.
+
+Now with the token stuff handled in authMiddleware.js (where we check for the token and retrieve it), we can bring in the protect func from middleware into userRoutes.js
+
+when we do a GET request on "http://localhost:5000/api/users/me", we can access the data here, but we want to protect this route with the protect func we created.
+Now that we have protect func in-place in userRoutes.js in router.get('/me', protect, getMe), if we try sending the request, we'll get the html error, which includes 
+"Not authorized, no token"
+
+USER CREATED: {name: Warren, email: warren@gmail.com, password: streets123}
+
+ACCESSING PROTECTED ROUTE, IN POSTMAN:
+1. login from any user account at POST http://localhost:5000/api/users/login.
+2. copy the (very long) ensuing token, without the quotes
+3. go back to GET http://localhost:5000/api/users/me
+4. under "Authorization" tab, set "Type" as "Bearer Token" and paste the token into "Token"
+6. Hit send. You can now see your user data! If wrong token is sent, it gives error: "Not authorized"
+
+NOW TO PROTECT OUT GOAL ROUTES
+getting all goals: GET http://localhost:5000/api/goals
+Let's first make it so that only the user's goals are shown
+We simply just import the "protect" func from authMiddleWare and import it in goalRoutes and implement it.
+Now, if we get the request, we get the "Not authorized, no token" error
+We pass "protect" to the rest of the goal routes to protect them too.
+
+NOW TO GET ONLY THE SPECIFIC USER'S GOALS:
+in goalController.js, we change goals to "const goals = await Goal.find({user: req.user.id})"
+To get those goals:
+1. login to specific user
+2. copy the token
+3. go to GET http://localhost:5000/api/goals. in authorization, just repeat the steps up to this point described above.
+
+SETTING A USER GOAL:
+in goalController.js:
+  const goal = await Goal.create({   
+    text: req.body.text,
+    user: req.user.id     // added this new stuff
+  })
+
+go to POST http://localhost:5000/api/goals. Paste in the token. Add a text field in the body tab. You can now see the new goal added when hitting "send"
+Now, if you go to GET http://localhost:5000/api/goals you can see your newly added goal(s). If we login from a different User (say, other than "Warren), 
+we shouldn't see Warren's goals
+You see the user's goal depending on the token you're currently on.
+
+Now for update/delete, we want to make sure the users can't update/delete goals other than their own, in goalController.js
+
+Now, if one user tries updating/deleting another's goals, we get "user not authorized" error.
+
+FINALLY: we have complete CRUD functionality WITH authentication AND authorization (by sending correct token)
+We're now done with the backend
+I can use this stuff as a template for future projects :)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,9 @@
+npm init: used to set up a new or existing npm package. 
+
+VARS SET IN THE VIDEO:
+description: Goalsetter app for youtube tutorial
+entry point: (index.js) server.js (created in "backend" folder
+(the vars between this and author are empty)
+author: Brad Traversy
+license: (ISC) MIT
+^^^ all this will create a package.json in the root

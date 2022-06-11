@@ -1,0 +1,95 @@
+IN THIS TUTORIAL WE'LL FINALLY BE WORKING ON THE FRONT END OF THE GOAL-SETTER APP.
+TO RUN: npm run client
+BOILERPLATE SHORTCUT FOR OUR JSX FILES: rfce
+apperently we're not going to be working much on the backend from here, unlike what I imagined.
+
+
+we'll be using redux and redux toolkit (website). I installed Redux DevTools for chrome. 
+
+creating the frontend part should look very familiar. We basically just create a react app within our project with "npx create-react-app frontend --template redux"
+This will put the app in newly created folder "frontend". We add the redux template, which will install the redux tool kit and the react redux package.  
+If you get an error to uninstall react app from system (not in my case) put "npx create-react-app@latest"
+
+in our root package.json, we add "client": "npm start --prefix frontend" under scripts. Now, if we type "npm run client" in terminal, we can run the frontend on the web.
+It will look quite different from a react app since we added the redux flag.
+
+Time to clean up frontend folder:
+stuff to delete: App.css, logo.svg
+In App.js: delete all imports, remove all of body of return statement.
+in store.js (in app folder): remove all redux counter bs
+index.css: delete everything. Replace with custom CSS from github repo.
+features folder: delete the counter folder (used to create default redux template counter thing), giving us an empty features folder
+
+NOW WE'LL CREATE OUR "PAGES":
+we'll have 3 pages: a dashboard, login page, and register page. We create pages folder in src. The pages are jsx files.
+
+Optional: downloading ES7 +React/Redux/React-Native snippet vs code extension. With this we can create boilerplate code with a few shortcuts:
+rfce:
+import React from 'react'
+
+function dashboard() {
+  return (
+    <div>dashboard</div>
+  )
+}
+
+export default dashboard
+
+**************************
+CREATING ROUTES:
+we do this on all the pages. Obviously we'll need routes for these pages, so we create them in the terminal: 
+cd frontend
+npm i react-router-dom
+
+To use this in our pages, we use import {BrowserRouter as Router, Routes, Route} from 'react-router-dom'. We don't need "import React from 'react'"
+so we remove that.
+
+in src, we create new folder "components", where we create Header.jsx for navigation.
+From here, we can install react icons in our project via:
+cd frontend
+npm i react-icons	(causes "found 1 high severity vulnerability", scary)
+
+BEFORE WE GET TO WORKING ON REDUX:
+we need to get our backend and frontend running at the same time. 
+1. We download the dev dependency "concurrently" package, which allows to run multiple scripts at the same time, in this case: client.js and server.js
+	* in root: npm i -D concurrently
+2. Now we can see concurrently under our dependencies in package.json. We put this under scripts:
+	"dev": "concurrently \"npm run server\" \"npm run client\""
+this will run the two commands (escaped with backslashes) simultaneously when we type "npm run dev".
+You can test out if the backend's working by going to postman
+
+TIME TO WORK ON REDUX AND BACKEND (now it's getting a bit confusing):
+looks like I was wrong on the backend in the beginning. Now that we've created all three pages and prettified them with css, we can move on 
+
+In src, we have a features folder, where we previously had all the unnecessary default counter stuff. Empty until now, we create a 'auth' folder, which 
+is going to represent the "auth" part of our global state (stay tuned). Within that we create "authSlice.js", where we'll have our reducers, initial state, etc.
+We import this stuff into app/store.js
+
+Now, if we go to our page -> inspector tools -> Redux -> state, we should now see  
+auth: {
+user(pin):null
+isError(pin):false
+isSuccess(pin):false
+isLoading(pin):false
+message(pin):""
+}
+
+NOW TO MOVE ON TO REGISTRATION:
+recall that in authSlice.js we imported an "createAsyncThunk" func from the redux toolkit, which deals with async. data and the backend.
+
+in the frontend, we install two modules: npm i axios react-toastify (latter lets us show error/success alerts)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
