@@ -79,13 +79,21 @@ recall that in authSlice.js we imported an "createAsyncThunk" func from the redu
 
 in the frontend, we install two modules: npm i axios react-toastify (latter lets us show error/success alerts)
 
+in authSlice.js, I forgot what localStorage is!!!!!
+
+IMPORTANT (ADDING PROXIES):
+in authService.js, we have our api set as /api/users/, but we want to look at localhost:3000/login (remember, 3000 is for frontend). We can just manually change
+our api via "const API_URL = "http://localhost:5000" (5000 is our server). Instead, we'll go to our FRONTEND package.json and add what's called a proxy. In the 
+main object (not in any of the nested ones), we add "proxy": "http://localhost:5000". Now, when we make a request, it will look at localhost:5000 and then within that
+'/api/users/', which is the correct endpoint.
+
+ADDING EXTRA REDUCERS FOR REGISTER:
+the last thing to do in authSlice.js is account for pending, fulfilled, and rejected states. We do this by going to our extraReducers within our authSlice func.  
+extraReducers an "async thunk func", and for every one of these states, we'll create a case for it to handle.
 
 
-
-
-
-
-
+NOW TO HOOK UP REGISTER FORM:
+we go back to register.jsx (under pages). We want to get our state and dispatch the register func. We import {useSelector, useDispatch} from 'react-redux'
 
 
 
