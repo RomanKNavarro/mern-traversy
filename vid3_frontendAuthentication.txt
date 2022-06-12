@@ -93,7 +93,75 @@ extraReducers an "async thunk func", and for every one of these states, we'll cr
 
 
 NOW TO HOOK UP REGISTER FORM:
-we go back to register.jsx (under pages). We want to get our state and dispatch the register func. We import {useSelector, useDispatch} from 'react-redux'
+we go back to register.jsx (under pages). We want to get our state and dispatch the register func. We import {useSelector, useDispatch} from 'react-redux', among other
+things. To use react toastify, there's a couple of simple things we need to do in App.js just to get the toast to show up:
+we import {ToastContainer} from 'react-toastify' and import 'react-toastify/dist/ReactToastify.css' and add the containter in the html
+
+With that done, we go back to Register.jsx and import register/reset funcs from authSlice.
+
+CREATE SPINNER ANIMATION FOR ISLOADING:
+in register.jsx, "isLoading" is defined but still unused. In components, we create spinner.jsx. We go back to register.jsx and import it there.
+
+THIS IS FREAKING SICK:
+back to the website, if we register, it takes us to the dashboard. From here, if we look at the state via the redux toolkit, we'll see, among other vars, the currently
+logged in user's info, including token.
+Why does this info show? (reminder): in our backend -> userController.js -> registerUser func:
+  if (user) {                   // if user is created...
+    res.status(201).json({      // status 201 means OK and also that something was created (in this case, a new user)
+      _id:  user.id,             // we could just put the token, but we want to send back some other data, like this id
+      name: user.name,
+      email: user.email,
+      token: generateToken(user._id)  // return a token generated with this func as well (see below)
+    })  
+
+
+If we reload the page while in the dashboard, that info will remain thanks to the localStorage value. In dev tools:
+Application (NOT under redux) -> local storage (at left) -> http://localhost:3000. Here you can see the user info.
+
+CREATE LOGOUT FUNC:
+to logout, we want to effectively destory the current user's token (the local storage value).
+
+We also want all the register funcs (log in/out, etc.) to be in the same place, so we put logout func in authSlice.js (OBVIOUSLY), 
+then create the logout func itself in authService.js, where we also have our register func defined. 
+
+now, we want to have a "logout" logo in our header. So, we go to components/header.jsx and create it there.
+
+We now have our logout func defined and implemented, as well as a working logoout icon that shows when user is logged in. However, if we try logging out,
+the current state won't be cleared, as we can see our user data in redux dev tools. In authSlice.js, we need to go to our 
+extraReducer and create a new case for logging out, which we haven't implemented yet.  
+
+from here, clicking the logout button redirects us to the dashboard and logs us out (button doesn't work for me. Strange: when I start up page, I am immediately logged in.)
+FIGURED OUT WHY I COULDN'T LOGOUT; FORGOT TO HAVE 'LOGOUT' EXPORTED IN AUTHSERVICE.JS
+
+NOW TO CREATE LOGIN FUNC:
+we've had the login button all along but without any functionality. We create new login func in authSlice.js. Very similar to register so we just copy that and modify it slightly.
+Since this is an authService func, we want to create the func itself in that file too.
+
+HOOKING UP THE LOGIN FORM:
+basically how we hooked up the register form via register.jsx. We copy over all the imports
+
+users:
+CookinSoul, cookin@gmail.com, anthology
+
+DONE. In the next video, we'll redirect out of dashboard if not logged in, and also start working on GOALS. In the features folder, we'll add a goals folder for anything having to
+do with our goals state, like creating, deleting, etc. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
